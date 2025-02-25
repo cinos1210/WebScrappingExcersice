@@ -3,10 +3,7 @@ import selectorlib
 from datetime import datetime
 import sqlite3
 
-connection = sqlite3.connect('data.db')
-cursor = connection.cursor()
-
-
+connection = sqlite3.connect('dataSP.db')
 
 
 URL = 'http://programmer100.pythonanywhere.com'
@@ -27,9 +24,12 @@ def extract(source):
 
 def store(extracted):
     now = datetime.now().strftime('%y-%m-%d-%H-%M-%S')
-    with open('temperature.txt', 'a') as file:
-        file.write(f'{now},{extracted}\n')
-
+    row =[now, str(extracted)]
+    date, temp = row
+    cursor = connection.cursor()
+    cursor.execute("INSERT INTO temperature VALUES(?,?)",(date,temp))
+    connection.commit()
+    print(row)
 if __name__ == '__main__':
     scrapped = scrape(URL)
     extracted = extract(scrapped)
